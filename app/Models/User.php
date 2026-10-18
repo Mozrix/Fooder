@@ -14,7 +14,7 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    protected $table = 'users';
+    protected $table = 'user';
 
     /**
      * The attributes that are mass assignable.
@@ -22,7 +22,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'nama',
         'email',
         'password',
         'role',
@@ -48,6 +48,15 @@ class User extends Authenticatable
         return [
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Accessor agar kode yang menggunakan ->name tetap berjalan
+     * meski kolom di database adalah 'nama'.
+     */
+    public function getNameAttribute(): string
+    {
+        return $this->nama;
     }
 
     public function toko(): HasOne
