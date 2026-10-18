@@ -24,19 +24,19 @@ class UserController extends Controller
     {
         $request->validate([
             'nama'     => 'required|string|max:255',
-            'email'    => 'required|string|email|max:255|unique:users',
+            'email'    => 'required|string|email|max:255|unique:user',
             'password' => 'required|string|min:8|confirmed',
-            'role'     => 'required|in:customer,store',
+            'role'     => 'required|in:admin,customer,seller',
         ]);
 
         $user = User::create([
-            'name'     => $request->nama,
+            'nama'     => $request->nama,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
             'role'     => $request->role,
         ]);
 
-        if ($user->role === 'store') {
+        if ($user->role === 'seller') {
             Toko::create([
                 'user_id'   => $user->id,
                 'name'      => 'Toko ' . $user->name,
@@ -80,7 +80,7 @@ class UserController extends Controller
         switch ($role) {
             case 'admin':
                 return redirect()->route('admin.dashboard');
-            case 'store':
+            case 'seller':
                 return redirect()->route('store.dashboard');
             default:
                 return redirect()->route('customer.home');

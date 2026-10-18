@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PesananController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -18,3 +19,11 @@ Route::get('/store/dashboard', [UserController::class, 'dashboardToko'])->name('
 Route::get('/admin/dashboard', [UserController::class, 'dashboardAdmin'])->name('admin.dashboard');
 
 Route::post('/logout', [UserController::class, 'prosesKeluar'])->name('logout');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/customer/menu', [PesananController::class, 'menu'])->name('customer.menu.index');
+    Route::get('/customer/pesanan', [PesananController::class, 'index'])->name('customer.pesanan.index');
+    Route::get('/customer/pesanan/checkout', [PesananController::class, 'checkout'])->name('customer.pesanan.checkout');
+    Route::post('/customer/pesanan', [PesananController::class, 'store'])->name('customer.pesanan.store');
+    Route::get('/customer/pesanan/{pesanan}', [PesananController::class, 'show'])->name('customer.pesanan.show');
+});
