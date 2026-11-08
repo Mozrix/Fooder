@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{AdminController, PesananController, UserController};
+use App\Http\Controllers\{AdminController, PesananController, UserController,};
+use App\Http\Controllers\Seller\{TokoController, DashboardController, ProdukController, StokController};
 
 Route::get('/', fn() => redirect()->route('admin.dashboard'));
 Route::get('/login', [UserController::class, 'tampilkanFormMasuk'])->name('login');
@@ -37,4 +38,25 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/customer/pesanan/checkout', [PesananController::class, 'checkout'])->name('customer.pesanan.checkout');
     Route::post('/customer/pesanan', [PesananController::class, 'store'])->name('customer.pesanan.store');
     Route::get('/customer/pesanan/{pesanan}', [PesananController::class, 'show'])->name('customer.pesanan.show');
+});
+
+Route::prefix('seller')->name('seller.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/products', [ProdukController::class, 'index'])->name('produk');
+    Route::post('/products', [ProdukController::class, 'store'])->name('produk.store');
+    Route::get('/products/{produk}/edit', [ProdukController::class, 'edit'])->name('produk.edit');
+    Route::put('/products/{produk}', [ProdukController::class, 'update'])->name('produk.update');
+    Route::delete('/products/{produk}', [ProdukController::class, 'destroy'])->name('produk.destroy');
+    Route::get('produk/stok', [StokController::class, 'index'])->name('produk.stok');
+    Route::get('/stocks', [StokController::class, 'index'])->name('stok');
+    Route::get('/stocks/{id}/edit', [StokController::class, 'edit'])->name('stok.edit');
+    Route::put('/stocks/{id}', [StokController::class, 'update'])->name('stok.update');
+    Route::view('/orders', 'seller.placeholder')->name('pesanan.index');
+    Route::view('/queue', 'seller.placeholder')->name('queue.index');
+    Route::view('/preorders', 'seller.placeholder')->name('preorders.index');
+    Route::view('/pos', 'seller.placeholder')->name('pos.create');
+    Route::view('/settings', 'seller.placeholder')->name('settings');
+    Route::get('/profile', [TokoController::class, 'show'])->name('toko');
+    Route::get('/profile/edit', [TokoController::class, 'edit'])->name('toko.edit');
+    Route::put('/profile', [TokoController::class, 'update'])->name('toko.update');
 });

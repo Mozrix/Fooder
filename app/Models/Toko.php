@@ -13,6 +13,9 @@ class Toko extends Model
     protected $fillable = [
         'user_id',
         'nama_toko',
+        'deskripsi',
+        'jam_buka',
+        'jam_tutup',
     ];
 
     public function user(): BelongsTo

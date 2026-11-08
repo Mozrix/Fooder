@@ -94,7 +94,7 @@ class UserController extends Controller
 
     public function dashboardToko()
     {
-        return view('store.dashboard');
+        return view('seller.dashboard');
     }
 
     public function dashboardAdmin()
