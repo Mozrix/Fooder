@@ -1,1 +1,263 @@
-<!doctype html><html><head><meta name="viewport" content="width=device-width"><style>body{font:15px system-ui;background:#f7f8fa}.login{max-width:390px;margin:15vh auto;background:white;padding:32px;border-radius:18px}input,button{width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:9px}button{background:#f47767;color:#fff;border:0}</style></head><body><div class="login"><h1>FoodOrder Admin</h1><p>Masuk untuk melanjutkan.</p><form method="post" action="{{ route('login.store') }}">@csrf<input name="email" type="email" placeholder="Email" value="{{ old('email') }}" required><input name="password" type="password" placeholder="Password" required><button>Masuk</button></form>@if($errors->any())<p style="color:#c0392b">{{ $errors->first() }}</p>@endif</div></body></html>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Fooder</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            background: #F7F8FA;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 420px;
+            background: #FFFFFF;
+            padding: 42px 38px;
+            border: 1px solid #E9E9E9;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .brand-name {
+            color: #FF6B0B;
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .brand-description {
+            color: #888888;
+            font-size: 13px;
+            margin-top: 7px;
+        }
+
+        .heading {
+            margin-bottom: 27px;
+        }
+
+        .heading h2 {
+            color: #222222;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .heading p {
+            color: #888888;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333333;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 9px;
+        }
+
+        .form-group input {
+            width: 100%;
+            height: 46px;
+            padding: 0 14px;
+            border: 1px solid #DDDDDD;
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+            color: #333333;
+            transition: 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: #FF6B0B;
+            box-shadow: 0 0 0 3px rgba(255, 107, 11, 0.10);
+        }
+
+        .form-group input::placeholder {
+            color: #AAAAAA;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin: 2px 0 23px;
+            font-size: 13px;
+            color: #666666;
+        }
+
+        .remember input {
+            width: 15px;
+            height: 15px;
+            accent-color: #FF6B0B;
+            cursor: pointer;
+        }
+
+        .remember label {
+            cursor: pointer;
+        }
+
+        .btn-submit {
+            width: 100%;
+            height: 47px;
+            border: none;
+            border-radius: 8px;
+            background: #FF6B0B;
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #F05A00;
+            box-shadow: 0 4px 12px rgba(255, 107, 11, 0.20);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 27px;
+            color: #777777;
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: #FF6B0B;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            background: #FFF0EF;
+            color: #C0392B;
+            border: 1px solid #F5D0CC;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .error {
+            color: #DC3545;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 32px 24px;
+            }
+
+            .brand-name {
+                font-size: 29px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="auth-card">
+
+        <div class="brand">
+            <div class="brand-name">Fooder.</div>
+            <p class="brand-description">Solusi pemesanan makanan lebih mudah</p>
+        </div>
+
+        <div class="heading">
+            <h2>Selamat Datang!</h2>
+            <p>Silakan masuk ke akun Anda untuk melanjutkan.</p>
+        </div>
+
+        @if ($errors->any())
+            <div class="alert">
+                {{ $errors->first() }}
+            </div>
+        @endif
+
+        <form action="{{ route('login.store') }}" method="POST">
+            @csrf
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value="{{ old('email') }}"
+                    placeholder="Masukkan email Anda"
+                    autocomplete="email"
+                    required
+                >
+                @error('email')
+                    <div class="error">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Masukkan password Anda"
+                    autocomplete="current-password"
+                    required
+                >
+                @error('password')
+                    <div class="error">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="remember">
+                <input
+                    type="checkbox"
+                    name="remember"
+                    id="remember"
+                    value="1"
+                >
+                <label for="remember">Ingat saya</label>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                Masuk
+            </button>
+        </form>
+
+        <div class="footer">
+            Belum memiliki akun?
+            <a href="{{ route('register') }}">Daftar sekarang</a>
+        </div>
+
+    </div>
+
+</body>
+</html>

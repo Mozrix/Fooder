@@ -49,11 +49,7 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-
-    /**
-     * Accessor agar kode yang menggunakan ->name tetap berjalan
-     * meski kolom di database adalah 'nama'.
-     */
+    
     public function getNameAttribute(): string
     {
         return $this->nama;
