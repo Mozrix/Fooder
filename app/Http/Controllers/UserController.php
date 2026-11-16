@@ -20,34 +20,28 @@ class UserController extends Controller
         return view('auth.register');
     }
 
+
     public function prosesDaftar(Request $request)
     {
         $request->validate([
             'nama'     => 'required|string|max:255',
-            'email'    => 'required|string|email|max:255|unique:user',
+            'email'    => 'required|string|email|max:255|unique:user,email',
             'password' => 'required|string|min:8|confirmed',
-            'role'     => 'required|in:admin,customer,seller',
         ]);
-
+    
         $user = User::create([
             'nama'     => $request->nama,
             'email'    => $request->email,
-            'password' => Hash::make($request->password),
-            'role'     => $request->role,
+            'password' => $request->password,
+            'role'     => 'customer',
         ]);
-
-        if ($user->role === 'seller') {
-            Toko::create([
-                'user_id'   => $user->id,
-                'name'      => 'Toko ' . $user->name,
-                'is_active' => true,
-            ]);
-        }
-
+    
         Auth::login($user);
-
-        return $this->arahkanBerdasarkanRole($user->role);
-    }
+    
+        $request->session()->regenerate();
+    
+        return redirect()->route('customer.home');
+    }    
 
     public function prosesMasuk(Request $request)
     {
