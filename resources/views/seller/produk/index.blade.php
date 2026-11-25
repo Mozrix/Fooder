@@ -219,19 +219,7 @@
                            placeholder="Contoh: Ayam Geprek Sambal Bawang" required value="{{ old('nama_produk') }}">
                 </div>
 
-                <div class="form-row-2col">
-                    <div class="form-group-modal">
-                        <label class="form-label-modal" for="kategori_id">Kategori Menu</label>
-                        <select id="kategori_id" name="kategori_id" class="form-select-modal" required>
-                            <option value="">Pilih Kategori</option>
-                            @foreach($kategoriList as $kat)
-                                <option value="{{ $kat->id }}" @selected(old('kategori_id') == $kat->id)>
-                                    {{ $kat->nama_kategori }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
+                <div class="form-row-1col">
                     <div class="form-group-modal">
                         <label class="form-label-modal" for="tipe">Tipe Produk</label>
                         <select id="tipe" name="tipe" class="form-select-modal" required>
