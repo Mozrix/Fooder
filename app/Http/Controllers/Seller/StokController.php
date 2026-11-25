@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\HistoriStok;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -16,15 +17,41 @@ class StokController extends Controller
         $toko = $request->user()->toko;
         abort_if(!$toko, 403, 'Anda tidak memiliki toko.');
 
-        $produk = $toko->produk()
-            ->when($request->search, function ($query, $search) {
-                $query->where('nama_produk', 'like', "%{$search}%");
-            })
-            ->latest()
+        $query = $toko->produk()->with('kategori');
+
+        if ($request->filled('search')) {
+            $search = Str::lower($request->search);
+            $query->whereRaw('LOWER(nama_produk) LIKE ?', ["%{$search}%"]);
+        }
+
+        if ($request->status === 'tersedia') {
+            $query->where('stok', '>', 0);
+        } elseif ($request->status === 'hampir_habis') {
+            $query->where('stok', '>', 0)->where('stok', '<', 5);
+        } elseif ($request->status === 'habis') {
+            $query->where('stok', '<=', 0);
+        }
+
+        $produk = $query->latest()
             ->paginate(10)
             ->withQueryString();
 
-        return view('seller.produk.stok', compact('produk'));
+        $totalMenu = $toko->produk()->count();
+        $stokAman = $toko->produk()->where('stok', '>=', 5)->count();
+        $stokMenipis = $toko->produk()->where('stok', '<', 5)->count();
+        $stokTersedia = $toko->produk()->where('stok', '>', 0)->count();
+        $stokHampirHabis = $toko->produk()->where('stok', '>', 0)->where('stok', '<', 5)->count();
+        $stokHabis = $toko->produk()->where('stok', '<=', 0)->count();
+
+        return view('seller.stok.index', compact(
+            'produk',
+            'totalMenu',
+            'stokAman',
+            'stokMenipis',
+            'stokTersedia',
+            'stokHampirHabis',
+            'stokHabis'
+        ));
     }
 
     public function update(Request $request, $id)
@@ -35,18 +62,12 @@ class StokController extends Controller
         $data = $request->validate([
             'jenis'      => ['required', Rule::in(['restock', 'koreksi'])],
             'jumlah'     => ['required', 'integer', 'min:0'],
-            'keterangan' => [
-                Rule::requiredIf($request->jenis === 'koreksi'),
-                'nullable', 'string', 'max:255',
-            ],
+            'keterangan' => ['required_if:jenis,koreksi', 'nullable', 'string', 'max:255'],
         ]);
 
         $jumlah = (int) $data['jumlah'];
 
-         $keterangan = $data['jenis'] === 'restock'
-            ? 'Restock Produk'
-            : (filled($data['keterangan'] ?? null) ? $data['keterangan'] : 'Koreksi stok');
-
+        $keterangan = $data['jenis'] === 'restock' ? 'restock' : trim($data['keterangan']);
 
         if ($data['jenis'] === 'restock' && $jumlah < 1) {
             return back()
@@ -62,27 +83,34 @@ class StokController extends Controller
                 ? $sebelum + $jumlah
                 : $jumlah;
 
-            if ($sesudah === $sebelum) {
-                throw ValidationException::withMessages([
-                    'jumlah' => 'Stok tidak berubah.',
-                ]);
-            }
-
-            $produk->update(['stok' => $sesudah]);
+            $produk->update([
+                'stok' => $sesudah,
+                'in_stock' => ($sesudah > 0),
+            ]);
 
             HistoriStok::create([
                 'produk_id'        => $produk->id,
                 'user_id'          => $request->user()->id,
-                'jenis'            => $data['jenis'],
+                'tipe'             => 'manual',
                 'jumlah_sebelum'   => $sebelum,
-                'jumlah_perubahan' => $sesudah - $sebelum,   // atau 'jumlah', sesuai migration
+                'jumlah_perubahan' => $sesudah - $sebelum,
                 'jumlah_setelah'   => $sesudah,
                 'keterangan'       => $keterangan,
             ]);
         });
 
         return redirect()
-            ->route('seller.produk.stok')
+            ->route('seller.stok')
             ->with('success', 'Stok berhasil diperbarui.');
+    }
+
+    public function RiwayatStokIndex(Request $request, $id){
+        $toko = $request->user()->toko;
+        abort_if(!$toko, 403, 'Anda tidak memiliki toko.');
+
+        $pesanan = $toko->pesanan()->findOrFail($id);
+        $query = HistoriStok::where('pesanan_id', $pesanan->id)->with('produk');
+
+        return view('seller.riwayat-stok', compact('pesanan', 'query'));
     }
 }

@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{AdminController, PesananController, UserController,};
-use App\Http\Controllers\Seller\{TokoController, DashboardController, ProdukController, StokController};
+use App\Http\Controllers\Seller\{TokoController, DashboardController, ProdukController, StokController, RiwayatController, PesananController as SellerPesananController};
 
 Route::get('/', fn() => redirect()->route('admin.dashboard'));
 Route::get('/login', [UserController::class, 'tampilkanFormMasuk'])->name('login');
@@ -42,21 +42,24 @@ Route::middleware(['auth'])->group(function () {
 
 Route::prefix('seller')->name('seller.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/products', [ProdukController::class, 'index'])->name('produk');
-    Route::post('/products', [ProdukController::class, 'store'])->name('produk.store');
-    Route::get('/products/{produk}/edit', [ProdukController::class, 'edit'])->name('produk.edit');
-    Route::put('/products/{produk}', [ProdukController::class, 'update'])->name('produk.update');
-    Route::delete('/products/{produk}', [ProdukController::class, 'destroy'])->name('produk.destroy');
-    Route::get('produk/stok', [StokController::class, 'index'])->name('produk.stok');
-    Route::get('/stocks', [StokController::class, 'index'])->name('stok');
-    Route::get('/stocks/{id}/edit', [StokController::class, 'edit'])->name('stok.edit');
-    Route::put('/stocks/{id}', [StokController::class, 'update'])->name('stok.update');
-    Route::view('/orders', 'seller.placeholder')->name('pesanan.index');
-    Route::view('/queue', 'seller.placeholder')->name('queue.index');
-    Route::view('/preorders', 'seller.placeholder')->name('preorders.index');
-    Route::view('/pos', 'seller.placeholder')->name('pos.create');
-    Route::view('/settings', 'seller.placeholder')->name('settings');
-    Route::get('/profile', [TokoController::class, 'show'])->name('toko');
-    Route::get('/profile/edit', [TokoController::class, 'edit'])->name('toko.edit');
-    Route::put('/profile', [TokoController::class, 'update'])->name('toko.update');
+
+    Route::get('/produk', [ProdukController::class, 'index'])->name('produk');
+    Route::post('/produk', [ProdukController::class, 'store'])->name('produk.store');
+    Route::get('/stok', [StokController::class, 'index'])->name('stok');
+    Route::get('/stok/{id}/edit', [StokController::class, 'edit'])->name('stok.edit');
+    Route::put('/stok/{id}', [StokController::class, 'update'])->name('stok.update');
+    Route::get('/produk/{produk}/edit', [ProdukController::class, 'edit'])->name('produk.edit');
+    Route::put('/produk/{produk}', [ProdukController::class, 'update'])->name('produk.update');
+    Route::delete('/produk/{produk}', [ProdukController::class, 'destroy'])->name('produk.destroy');
+
+    Route::get('/pesanan', [\App\Http\Controllers\Seller\PesananController::class, 'index'])->name('pesanan');
+    Route::patch('/pesanan/{pesanan}/status', [\App\Http\Controllers\Seller\PesananController::class, 'updateStatus'])->name('pesanan.updateStatus');
+
+    Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat');
+    Route::get('/riwayat/stok', [RiwayatController::class, 'stokIndex'])->name('riwayat.stok.index');
+    Route::get('/riwayat/stok/{id}', [RiwayatController::class, 'stok'])->name('riwayat.stok');
+
+    Route::get('/toko', [TokoController::class, 'index'])->name('toko');
+    Route::get('/toko/edit', [TokoController::class, 'edit'])->name('toko.edit');
+    Route::put('/toko', [TokoController::class, 'update'])->name('toko.update');
 });

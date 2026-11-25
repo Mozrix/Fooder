@@ -75,7 +75,7 @@ class UserController extends Controller
             case 'admin':
                 return redirect()->route('admin.dashboard');
             case 'seller':
-                return redirect()->route('store.dashboard');
+                return redirect()->route('seller.dashboard');
             default:
                 return redirect()->route('customer.home');
         }

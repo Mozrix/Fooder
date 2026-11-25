@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Kategori;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -22,6 +23,7 @@ class DatabaseSeeder extends Seeder
                 'role' => 'seller',
             ],
             [
+                'id' => 3,
                 'nama' => 'Customer Fooder',
                 'email' => 'customer@fooder.test',
                 'role' => 'customer',
@@ -36,7 +38,7 @@ class DatabaseSeeder extends Seeder
                 [
                     'nama' => $data['nama'],
                     'role' => $data['role'],
-                    'password' => 'password',
+                    'password' => Hash::make('password'),
                 ]
             );
 

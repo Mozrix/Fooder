@@ -14,6 +14,7 @@ class Toko extends Model
         'user_id',
         'nama_toko',
         'deskripsi',
+        'gambar',
         'jam_buka',
         'jam_tutup',
     ];
