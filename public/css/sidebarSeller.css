@@ -555,7 +555,7 @@ body {
 /* Alerts / Flash Messages */
 .flash {
     padding: 14px 18px;
-    border-radius: var(--radius-md);
+    border-radius: 0 0 12px 12px;
     margin-bottom: 24px;
     font-size: 13.5px;
     font-weight: 600;
@@ -564,7 +564,25 @@ body {
     border: 1px solid #bbf7d0;
     display: flex;
     align-items: center;
+    margin: 0 24px 0 24px;
     gap: 10px;
+    opacity: 1;
+    transition: opacity 0.2s ease, transform 0.2s ease, margin 0.2s ease, padding 0.2s ease;
+}
+
+.flash-error {
+    background: #fef2f2;
+    color: #b91c1c;
+    border-color: #fecaca;
+}
+
+.flash-dismissed {
+    opacity: 0;
+    transform: translateY(-6px);
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    pointer-events: none;
 }
 
 /* Responsive */

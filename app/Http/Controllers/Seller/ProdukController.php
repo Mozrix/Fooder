@@ -71,6 +71,8 @@ class ProdukController extends Controller
         $toko = $request->user()->toko;
         abort_if(!$toko, 403, 'Toko tidak terdaftar');
 
+        
+
         $data = $request->validate([
             'nama_produk' => 'required|string|max:255',
             'harga' => 'required|numeric|min:0',
@@ -78,10 +80,11 @@ class ProdukController extends Controller
             'deskripsi' => 'nullable|string',
             'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'tipe' => 'required|in:makanan berat,makanan ringan,minuman',
-            'kategori_id' => 'required|exists:kategori,id',
         ]);
 
         $data['in_stock'] = ($data['stok'] > 0);
+
+        $data['kategori_id'] = Kategori::firstOrCreate(['nama_kategori' => $data['tipe']])->id;
 
         if ($request->hasFile('gambar')) {
             $data['gambar'] = $request->file('gambar')->store('produk', 'public');

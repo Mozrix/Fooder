@@ -115,7 +115,7 @@
                             id="row-{{ $item->id }}">
                             <td>
                                 <div class="stock-product-cell">
-                                    <img src="{{ $item->gambar }}"
+                                    <img src="{{ $item->gambar ? asset('storage/' . $item->gambar) : '' }}" alt="{{ $item->nama_produk }}" class="stock-thumb-img }}"
                                          alt="{{ $item->nama_produk }}"
                                          class="stock-thumb-img">
                                     <div class="stock-product-info">

@@ -169,20 +169,26 @@
 
             <main class="MainContent @yield('main_class')">
                 @if(session('ok'))
-                    <div class="flash">
-                        <i class="fa-solid fa-circle-check"></i>
+                    <div class="flash" role="status" aria-live="polite">
+                        <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
                         <span>{{ session('ok') }}</span>
                     </div>
                 @endif
                 @if(session('success'))
-                    <div class="flash">
-                        <i class="fa-solid fa-circle-check"></i>
+                    <div class="flash" role="status" aria-live="polite">
+                        <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
                         <span>{{ session('success') }}</span>
                     </div>
                 @endif
+                @if(session('error'))
+                    <div class="flash flash-error" role="alert" aria-live="assertive">
+                        <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+                        <span>{{ session('error') }}</span>
+                    </div>
+                @endif
                 @if(isset($errors) && $errors->any())
-                    <div class="flash" style="background:#fef2f2; color:#b91c1c; border-color:#fecaca;">
-                        <i class="fa-solid fa-circle-exclamation"></i>
+                    <div class="flash flash-error" role="alert" aria-live="assertive">
+                        <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
                         <span>{{ $errors->first() }}</span>
                     </div>
                 @endif
@@ -194,6 +200,15 @@
 
     @stack('scripts')
     <script>
+        document.querySelectorAll('.flash').forEach(function (alert) {
+            window.setTimeout(function () {
+                alert.classList.add('flash-dismissed');
+                window.setTimeout(function () {
+                    alert.remove();
+                }, 220);
+            }, 3000);
+        });
+
         document.querySelectorAll('.side-nav-group-toggle').forEach(function (toggle) {
             toggle.addEventListener('click', function () {
                 const expanded = toggle.getAttribute('aria-expanded') === 'true';
