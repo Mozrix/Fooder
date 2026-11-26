@@ -1,0 +1,957 @@
+/*
+ * Customer UI Stylesheet — public/css/customer.css
+ *
+ * Design identity dibuat untuk konsisten dengan role Admin & Owner:
+ *  - Font Plus Jakarta Sans (dari halaman Admin, diload via Google Fonts di halaman customer)
+ *  - Primary orange #f97316, text gelap #1e293b, abu #64748b
+ *  - Kartu putih, border #e2e8f0, radius 12px, shadow lembut
+ *  - Tabel dengan aksen baris bawah (seperti .table di layouts/admin.blade.php)
+ */
+
+:root {
+    --cust-primary: #f97316;
+    --cust-primary-hover: #ea580c;
+    --cust-primary-light: #fff7ed;
+    --cust-primary-dark: #9a3412;
+    --cust-text-main: #1e293b;
+    --cust-text-body: #334155;
+    --cust-text-muted: #64748b;
+    --cust-text-subtle: #94a3b8;
+    --cust-bg-page: #ff642f; /* Dominasi orange utama halaman Customer (identitas seller public) */
+    --cust-bg-card: #ffffff;
+    --cust-bg-muted: #f1f5f9;
+    --cust-border: #e2e8f0;
+    --cust-radius: 12px;
+    --cust-radius-sm: 8px;
+    --cust-radius-pill: 99px;
+    --cust-font: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --cust-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body.cust-page {
+    margin: 0;
+    background: var(--cust-bg-page);
+    color: var(--cust-text-main);
+    font-family: var(--cust-font);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ------------------------------------------------------------------
+   Layout header halaman Customer
+   ------------------------------------------------------------------ */
+.cust-main {
+    min-height: 100vh;
+    padding: 28px 32px 48px;
+}
+
+.cust-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.cust-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--cust-primary);
+    letter-spacing: -0.4px;
+}
+
+.cust-header nav {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.cust-header nav a,
+.cust-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--cust-text-muted);
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.cust-header nav a:hover,
+.cust-nav-link:hover {
+    background: var(--cust-primary-light);
+    color: var(--cust-primary);
+}
+
+.cust-header nav a.active {
+    background: var(--cust-primary);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
+}
+
+/* ------------------------------------------------------------------
+   Cards
+   ------------------------------------------------------------------ */
+.cust-card {
+    background: var(--cust-bg-card);
+    border: 1px solid var(--cust-border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--cust-shadow);
+}
+
+.cust-card h2,
+.cust-card-title {
+    margin: 0 0 18px;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--cust-text-main);
+    letter-spacing: -0.3px;
+}
+
+/* ------------------------------------------------------------------
+   Buttons — mirip .btn di layouts/admin.blade.php
+   ------------------------------------------------------------------ */
+.cust-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--cust-primary);
+    color: #ffffff;
+    border: 0;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s ease;
+}
+
+.cust-btn:hover {
+    background: var(--cust-primary-hover);
+}
+
+.cust-btn-sm {
+    padding: 8px 14px;
+    font-size: 13px;
+}
+
+.cust-btn-ghost {
+    background: #f1f5f9;
+    color: #334155;
+}
+
+.cust-btn-ghost:hover {
+    background: #e2e8f0;
+    color: var(--cust-text-main);
+}
+
+/* ------------------------------------------------------------------
+   Form field — mirip .input di layouts/admin.blade.php
+   ------------------------------------------------------------------ */
+.cust-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--cust-text-main);
+    margin: 14px 0 6px;
+}
+
+.cust-label-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    color: var(--cust-text-body);
+    margin: 14px 0 6px;
+}
+
+.cust-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--cust-border);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 13.5px;
+    color: var(--cust-text-main);
+    background: #ffffff;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cust-input:focus {
+    border-color: var(--cust-primary);
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+}
+
+.cust-input[type="number"] {
+    max-width: 140px;
+}
+
+/* ------------------------------------------------------------------
+   Tables — mirip .table di layouts/admin.blade.php
+   ------------------------------------------------------------------ */
+.cust-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 13.5px;
+}
+
+.cust-table th {
+    text-align: left;
+    padding: 12px 14px;
+    color: var(--cust-text-muted);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--cust-border);
+    background: var(--cust-bg-muted);
+}
+
+.cust-table td {
+    text-align: left;
+    padding: 14px;
+    border-bottom: 1px solid #f1f5f9;
+    color: var(--cust-text-body);
+    vertical-align: middle;
+}
+
+.cust-table tr:last-child td {
+    border-bottom: none;
+}
+
+.cust-table tbody tr:hover td {
+    background: var(--cust-bg-muted);
+}
+
+.cust-price {
+    font-weight: 800;
+    color: var(--cust-text-main);
+}
+
+/* ------------------------------------------------------------------
+   Badges / status — warna sama keluarga seller-public + admin
+   ------------------------------------------------------------------ */
+.cust-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: var(--cust-radius-pill);
+    font-size: 11.5px;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+    text-transform: capitalize;
+}
+
+.cust-badge-red {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.cust-badge-blue {
+    background: #eff6ff;
+    color: #3b82f6;
+}
+
+.cust-badge-green {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.cust-badge-amber {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.cust-badge-gray {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+/* ------------------------------------------------------------------
+   Flash message — mirip .flash di sidebarSeller.css
+   ------------------------------------------------------------------ */
+.cust-flash {
+    padding: 14px 18px;
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+    border-radius: var(--cust-radius);
+    margin-bottom: 24px;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+/* ------------------------------------------------------------------
+   Empty state / meta text
+   ------------------------------------------------------------------ */
+.cust-muted {
+    color: var(--cust-text-muted);
+    font-size: 13.5px;
+}
+
+/* ------------------------------------------------------------------
+   Pagination — LB default (bootstrap-ish) ditata agar pas identitas
+   ------------------------------------------------------------------ */
+.cust-page-nav,
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin: 24px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pagination .page-item {
+    list-style: none;
+}
+
+.pagination .page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 34px;
+    padding: 0 10px;
+    border: 1px solid var(--cust-border);
+    border-radius: 10px;
+    background: #ffffff;
+    color: var(--cust-text-muted);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.pagination .page-link:hover {
+    border-color: var(--cust-primary);
+    color: var(--cust-primary);
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--cust-primary);
+    border-color: var(--cust-primary);
+    color: #ffffff;
+}
+
+.pagination .disabled .page-link {
+    background: var(--cust-bg-muted);
+    color: var(--cust-text-muted);
+}
+
+/* ------------------------------------------------------------------
+   Page typography (h1/h2 di halaman customer)
+   ------------------------------------------------------------------ */
+.cust-page h1 {
+    margin: 0 0 20px;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--cust-text-main);
+    letter-spacing: -0.3px;
+}
+
+.cust-page h2 {
+    margin: 0 0 14px;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--cust-text-main);
+}
+
+/* ------------------------------------------------------------------
+   Menu grid — kartu produk terlihat rapi & responsif
+   ------------------------------------------------------------------ */
+.cust-menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.cust-product-card {
+    min-height: 210px;
+}
+
+/* Qty row di kartu menu */
+.cust-qty-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+/* Wrap tabel horizontal di mobile */
+.cust-table-wrap {
+    overflow-x: auto;
+    width: 100%;
+}
+
+/* ------------------------------------------------------------------
+   Status badge — alias untuk berbagai string status pesanan
+   (menunggu konfirmasi / diproses / siap diambil / selesai / dibatalkan)
+   ------------------------------------------------------------------ */
+.cust-badge-menunggu,
+.cust-badge-menunggu-konfirmasi,
+.cust-badge-menunggu-diproses {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.cust-badge-diproses,
+.cust-badge-sedang-diproses,
+.cust-badge-siap-ambil {
+    background: #eff6ff;
+    color: #3b82f6;
+}
+
+.cust-badge-siap-diambil,
+.cust-badge-selesai {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.cust-badge-dibatalkan,
+.cust-badge-ditolak,
+.cust-badge-ditolak-toko {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+/* ------------------------------------------------------------------
+   Layout Customer — Sidebar putih + Main orange + Topbar putih
+   ------------------------------------------------------------------ */
+.cust-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Sidebar putih — lebar konsisten dengan identitas Seller (270px), pojok bulat 12px, hanya menu */
+.cust-sidebar {
+    width: 270px;
+    background: #ffffff;
+    position: static;
+    top: auto;
+    padding: 18px 0 18px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-right: 1px solid var(--cust-border);
+}
+
+.cust-sidebar-top {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navigasi — ikon & tulisan seimbang, rata kiri, jarak icon-teks 14–18px */
+.cust-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-right: 16px;
+}
+
+.cust-nav a {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-height: 44px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    color: var(--cust-text-muted);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    box-sizing: border-box;
+}
+
+.cust-nav a:hover {
+    background: #f8fafc;
+    color: var(--cust-text-main);
+}
+
+/* Menu aktif: background orange, tulisan putih, icon putih, radius 12px */
+.cust-nav a.active {
+    background: var(--cust-primary);
+    color: #ffffff;
+}
+
+.cust-nav a > span:last-child {
+    flex: 1;
+}
+
+.cust-nav a.active > span:last-child {
+    font-weight: 700;
+}
+
+/* Icon — posisi horizontal yang sama (align-items: center, centered) */
+.cust-nav-icon {
+    width: 22px;
+    font-size: 15.5px;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: currentColor;
+    flex-shrink: 0;
+}
+
+.cust-sidebar-footer {
+    border-top: 1px solid var(--cust-border);
+    padding-top: 16px;
+    margin-top: auto;
+}
+
+.cust-btn-logout-sb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px 14px;
+    background: #fee2e2;
+    color: #dc2626;
+    border: none;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s ease;
+}
+
+.cust-btn-logout-sb:hover {
+    background: #fecaca;
+}
+
+/* Kept for compatibility (tidak dipakai lagi dalam markup) */
+.cust-sidebar-logout {
+    border-top: 1px solid var(--cust-border);
+    padding-top: 16px;
+    margin-top: auto;
+}
+
+.cust-btn-logout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 11px 14px;
+    background: #fee2e2;
+    color: #dc2626;
+    border: none;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s ease;
+}
+
+.cust-btn-logout:hover {
+    background: #fecaca;
+}
+
+/* Body di bawah header (sidebar + main) */
+.cust-body {
+    display: flex;
+    min-height: 100vh;
+    margin-top: 88px;
+    box-sizing: border-box;
+}
+
+/* Main: background orange — tanpa margin kiri tambahan (sidebar static sudah menempati 260px) */
+.cust-main {
+    flex: 1;
+    min-height: 100vh;
+    background: var(--cust-bg-page);
+    padding: 28px 32px 48px;
+    box-sizing: border-box;
+}
+
+/* Header putih full width — mirror .topbar di sidebarSeller.css */
+.cust-header-top {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    background: #ffffff;
+    border-bottom: 1px solid var(--cust-border);
+    height: 88px;
+    padding: 0 36px;
+    box-sizing: border-box;
+}
+
+.cust-header-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.cust-header-brand-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: var(--cust-primary);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.cust-header-brand-text {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--cust-text-main);
+    letter-spacing: -0.3px;
+}
+
+.cust-header-brand-sub {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--cust-primary);
+    letter-spacing: 0.8px;
+    margin-left: 4px;
+    opacity: 0.9;
+}
+
+.cust-header-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--cust-text-main);
+    letter-spacing: -0.3px;
+    white-space: nowrap;
+}
+
+.cust-header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+}
+
+.cust-user-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #ffffff;
+    border: 1px solid var(--cust-border);
+    padding: 6px 14px;
+    border-radius: 99px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.cust-user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--cust-primary);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.cust-user-name {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--cust-text-main);
+}
+
+.cust-user-tag {
+    font-size: 10px;
+    font-weight: 800;
+    color: #ffffff;
+    background: var(--cust-primary);
+    padding: 3px 8px;
+    border-radius: 99px;
+}
+
+/* Konten putih berada di atas background orange */
+.cust-content {
+    background: #ffffff;
+    border: 1px solid var(--cust-border);
+    border-radius: 16px;
+    padding: 26px;
+    box-shadow: var(--cust-shadow);
+}
+
+.cust-page-head {
+    margin-bottom: 18px;
+}
+
+/* ------------------------------------------------------------------
+   Responsif — sidebar ikon, topbar rapi di mobile
+   ------------------------------------------------------------------ */
+@media (max-width: 768px) {
+    .cust-sidebar {
+        width: 76px;
+        padding: 20px 8px;
+    }
+
+    .cust-brand-text,
+    .cust-brand-sub,
+    .cust-nav a > span:not(.cust-nav-icon),
+    .cust-nav a.active > span:not(.cust-nav-icon) {
+        display: none;
+    }
+
+    .cust-nav a {
+        justify-content: center;
+        padding: 12px;
+    }
+
+    .cust-main {
+        padding: 20px 16px;
+    }
+
+    .cust-header-top {
+        padding-left: 20px;
+        padding-right: 20px;
+        height: 56px;
+    }
+
+    .cust-header-title {
+        font-size: 16px;
+    }
+
+    .cust-body {
+        margin-top: 64px;
+    }
+}
+@media (max-width: 640px) {
+    .cust-main {
+        padding: 16px;
+    }
+
+    .cust-card {
+        padding: 18px;
+    }
+
+    .cust-table {
+        font-size: 13px;
+    }
+
+    .cust-table th {
+        padding: 10px 12px;
+    }
+
+    .cust-table td {
+        padding: 12px;
+    }
+}
+
+/* ------------------------------------------------------------------
+   Redesign Customer — Menu Header Card (judul + identitas dalam 1 card)
+   ------------------------------------------------------------------ */
+.cust-header-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+}
+
+.cust-header-icon {
+    width: 42px;
+    height: 42px;
+    background: var(--cust-primary-light);
+    color: var(--cust-primary);
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.cust-header-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--cust-text-main);
+    margin: 0;
+    letter-spacing: -0.3px;
+}
+
+.cust-header-identity {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--cust-text-muted);
+    flex-shrink: 0;
+}
+
+/* ------------------------------------------------------------------
+   Redesign Customer — Histori Pembelian (Dashboard)
+   ------------------------------------------------------------------ */
+.cust-histori {
+    margin-bottom: 24px;
+}
+
+.cust-histori-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.cust-histori-icon {
+    width: 38px;
+    height: 38px;
+    background: #ffedd5;
+    color: var(--cust-primary);
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+}
+
+.cust-histori-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--cust-text-main);
+    margin: 0;
+    letter-spacing: -0.2px;
+}
+
+.cust-histori-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 40px 20px;
+}
+
+.cust-empty-icon {
+    width: 52px;
+    height: 52px;
+    background: #fff2e8;
+    color: var(--cust-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.cust-histori-empty p {
+    margin: 0;
+    color: var(--cust-text-muted);
+    font-size: 14px;
+    text-align: center;
+}
+
+.cust-histori-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px 16px;
+    background: var(--cust-bg-muted);
+    border-radius: 14px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.cust-histori-item-head {
+    min-width: 240px;
+}
+
+.cust-histori-item-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--cust-text-main);
+}
+
+.cust-histori-item-meta {
+    font-size: 12px;
+    color: var(--cust-text-muted);
+    margin-top: 2px;
+}
+
+.cust-histori-item-toko {
+    font-size: 13px;
+    color: var(--cust-text-muted);
+    font-weight: 700;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+/* ------------------------------------------------------------------
+   Redesign Customer — Product Card dengan gambar
+   ------------------------------------------------------------------ */
+.cust-product-card {
+    min-height: 280px;
+    position: relative;
+}
+
+.cust-product-card .cust-product-image {
+    width: 100%;
+    height: 150px;
+    border-radius: 14px 14px 0 0;
+    object-fit: cover;
+    display: block;
+}
+
+.cust-product-card:not(.has-image) .cust-product-body {
+    padding-top: 4px;
+}
+
+.cust-product-body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cust-product-body h2 {
+    font-size: 16px;
+    margin: 0;
+}
+
+.cust-product-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.cust-product-action {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
