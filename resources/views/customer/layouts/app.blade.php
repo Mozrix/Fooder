@@ -67,14 +67,52 @@
 
     <main class="cust-main market-main">
         <div class="cust-content market-content">
+            @if (session('ok'))
+                <div class="flash cust-flash market-flash" role="status" aria-live="polite">
+                    <span class="flash-content">
+                        <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                        <span>{{ session('ok') }}</span>
+                    </span>
+                    <button type="button" class="flash-close" aria-label="Tutup notifikasi">
+                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                    </button>
+                </div>
+            @endif
             @if (session('success'))
-                <div class="cust-flash market-flash" role="status">{{ session('success') }}</div>
+                <div class="flash cust-flash market-flash" role="status" aria-live="polite">
+                    <span class="flash-content">
+                        <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                        <span>{{ session('success') }}</span>
+                    </span>
+                    <button type="button" class="flash-close" aria-label="Tutup notifikasi">
+                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                    </button>
+                </div>
+            @endif
+            @if (session('error'))
+                <div class="flash flash-error market-error" role="alert" aria-live="assertive">
+                    <span class="flash-content">
+                        <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+                        <span>{{ session('error') }}</span>
+                    </span>
+                    <button type="button" class="flash-close" aria-label="Tutup notifikasi">
+                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                    </button>
+                </div>
             @endif
             @if ($errors->any())
-                <div class="market-error" role="alert">
-                    @foreach ($errors->all() as $error)
-                        <p>{{ $error }}</p>
-                    @endforeach
+                <div class="flash flash-error market-error" role="alert" aria-live="assertive">
+                    <span class="flash-content">
+                        <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+                        <div>
+                            @foreach ($errors->all() as $error)
+                                <p>{{ $error }}</p>
+                            @endforeach
+                        </div>
+                    </span>
+                    <button type="button" class="flash-close" aria-label="Tutup notifikasi">
+                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                    </button>
                 </div>
             @endif
             @yield('content')
@@ -108,5 +146,32 @@
         <div class="market-footer-bottom">© {{ date('Y') }} Fooder. Pilihan kuliner untuk setiap hari.</div>
     </footer>
 </div>
+
+@stack('scripts')
+<script>
+    (function () {
+        function dismissFlash(alert) {
+            if (!alert || alert.classList.contains('flash-dismissed')) return;
+            alert.classList.add('flash-dismissed');
+            window.setTimeout(function () {
+                alert.remove();
+            }, 220);
+        }
+
+        document.querySelectorAll('.flash, .cust-flash, .market-flash').forEach(function (alert) {
+            var closeBtn = alert.querySelector('.flash-close');
+            var timer = window.setTimeout(function () {
+                dismissFlash(alert);
+            }, 3000);
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function () {
+                    window.clearTimeout(timer);
+                    dismissFlash(alert);
+                });
+            }
+        });
+    })();
+</script>
 </body>
 </html>

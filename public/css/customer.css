@@ -9,20 +9,100 @@
  */
 
 :root {
-    --cust-primary: #f97316;
-    --cust-primary-hover: #ea580c;
-    --cust-primary-light: #fff7ed;
-    --cust-primary-dark: #9a3412;
-    --cust-text-main: #1e293b;
-    --cust-text-body: #334155;
-    --cust-text-muted: #64748b;
-    --cust-text-subtle: #94a3b8;
-    --cust-bg-page: #ff642f; /* Dominasi orange utama halaman Customer (identitas seller public) */
-    --cust-bg-card: #ffffff;
-    --cust-bg-muted: #f1f5f9;
-    --cust-border: #e2e8f0;
-    --cust-radius: 12px;
-    --cust-radius-sm: 8px;
+    /* Canonical Tokens (aligned with sidebarSeller.css) */
+    --primary-orange: #ff642f;
+    --primary-orange-hover: #ea580c;
+    --primary-orange-light: #fff7ed;
+    --primary-orange-dark: #9a3412;
+    --primary-orange-darker: #7c2d12;
+    --text-dark: #0f172a;
+    --text-heading: #1e293b;
+    --text-body: #334155;
+    --text-muted: #64748b;
+    --text-subtle: #94a3b8;
+    --bg-page: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-muted: #f1f5f9;
+    --bg-soft: #fafbfc;
+    --border-color: #eef2f6;
+    --border-subtle: #e2e8f0;
+    --badge-pink-bg: #fee2e2;
+    --badge-pink-text: #ef4444;
+    --badge-green-bg: #ecfdf5;
+    --badge-green-text: #059669;
+    --badge-blue-bg: #eff6ff;
+    --badge-blue-text: #3b82f6;
+    --color-primary: var(--primary-orange);
+    --color-primary-hover: var(--primary-orange-hover);
+    --color-primary-dark: var(--primary-orange-dark);
+    --color-primary-darker: var(--primary-orange-darker);
+    --color-primary-bg: var(--primary-orange-light);
+    --color-primary-bg-light: #ffedd5;
+    --color-primary-border: #fed7aa;
+    --color-white: #ffffff;
+    --color-text-900: var(--text-dark);
+    --color-text-800: var(--text-heading);
+    --color-text-700: var(--text-body);
+    --color-text-600: #475569;
+    --color-text-500: var(--text-muted);
+    --color-text-400: var(--text-subtle);
+    --color-border-300: #cbd5e1;
+    --color-border-200: var(--border-subtle);
+    --color-border-100: var(--border-color);
+    --color-bg-50: var(--bg-muted);
+    --color-bg-25: var(--bg-page);
+    --color-bg-10: var(--bg-soft);
+    --color-green-900: #065f46;
+    --color-green-800: #044e39;
+    --color-green-700: #15803d;
+    --color-green-600: #16a34a;
+    --color-green-500: #059669;
+    --color-green-400: #10b981;
+    --color-green-bg: #dcfce7;
+    --color-green-bg-light: #ecfdf5;
+    --color-green-border: #bbf7d0;
+    --color-green-border-light: #a7f3d0;
+    --color-red-700: #dc2626;
+    --color-red-600: #ef4444;
+    --color-red-bg: #fee2e2;
+    --color-red-border: #fecaca;
+    --color-blue-600: #0284c7;
+    --color-blue-bg: #e0f2fe;
+    --color-orange-600: #c2410c;
+    --color-orange-500: #ea580c;
+    --color-orange-bg: #fff7ed;
+    --color-orange-bg-light: #ffedd5;
+    --color-amber-500: #f59e0b;
+    --seller-canvas: #ff642f;
+    --sidebar-width: 250px;
+    --radius-action: 6px;
+    --radius-filter: 6px;
+    --radius-container: 12px;
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 12px;
+    --radius-xl: 12px;
+    --radius-2xl: 12px;
+    --radius-3xl: 12px;
+    --radius-4xl: 12px;
+    --radius-pill: 6px;
+    --radius-circle: 50%;
+
+    /* Customer Aliases */
+    --cust-primary: var(--primary-orange);
+    --cust-primary-hover: var(--primary-orange-hover);
+    --cust-primary-light: var(--primary-orange-light);
+    --cust-primary-dark: var(--primary-orange-dark);
+    --cust-text-main: var(--text-heading);
+    --cust-text-body: var(--text-body);
+    --cust-text-muted: var(--text-muted);
+    --cust-text-subtle: var(--text-subtle);
+    --cust-bg-page: var(--seller-canvas);
+    --cust-bg-card: var(--bg-card);
+    --cust-bg-muted: var(--bg-muted);
+    --cust-border: var(--border-subtle);
+    --cust-radius: var(--radius-container);
+    --cust-radius-sm: var(--radius-action);
     --cust-radius-pill: 99px;
     --cust-font: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --cust-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
@@ -286,17 +366,68 @@ body.cust-page {
 }
 
 /* ------------------------------------------------------------------
-   Flash message — mirip .flash di sidebarSeller.css
+   Flash message — selaras dengan .flash di sidebarSeller.css
    ------------------------------------------------------------------ */
+.flash,
 .cust-flash {
     padding: 14px 18px;
     background: #f0fdf4;
-    color: #15803d;
-    border: 1px solid #bbf7d0;
+    color: var(--color-green-700);
+    border: 1px solid var(--color-green-border);
     border-radius: var(--cust-radius);
     margin-bottom: 24px;
-    font-weight: 500;
-    font-size: 14px;
+    font-weight: 600;
+    font-size: 13.5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    opacity: 1;
+    transition: opacity 0.2s ease, transform 0.2s ease, margin 0.2s ease, padding 0.2s ease;
+}
+
+.flash-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.flash-error {
+    background: #fef2f2;
+    color: #b91c1c;
+    border-color: var(--color-red-border);
+}
+
+.flash-close {
+    background: transparent;
+    border: 0;
+    color: currentColor;
+    opacity: 0.65;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: var(--radius-action);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.flash-close:hover {
+    opacity: 1;
+    background: rgba(15, 23, 42, 0.06);
+}
+
+.flash-dismissed {
+    opacity: 0;
+    transform: translateY(-6px);
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    border-width: 0 !important;
+    overflow: hidden;
+    pointer-events: none;
 }
 
 /* ------------------------------------------------------------------
