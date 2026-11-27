@@ -271,7 +271,7 @@
                             </td>
                             <td style="text-align:right;">
                                 <div class="action-buttons-wrap">
-                                    <a href="{{ route('seller.riwayat', $item->id) }}" class="btn-table-action-icon" title="Detail">
+                                    <a href="{{ route('seller.riwayat.show', $item->id) }}" class="btn-table-action-icon" title="Detail">
                                         <i class="fa-regular fa-file-lines"></i>
                                     </a>
                                     <button type="button" class="btn-table-action-icon" onclick="window.print()" title="Print">

@@ -3,6 +3,12 @@
 @section('title', '')
 
 @section('content')
+    @if (session('success'))
+        <div class="cust-flash">
+            {{ session('success') }}
+        </div>
+    @endif
+
     @if ($pesanan->isEmpty())
         <p class="cust-muted">Belum ada pesanan.</p>
     @else

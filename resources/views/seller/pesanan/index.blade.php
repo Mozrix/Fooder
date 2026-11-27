@@ -42,7 +42,7 @@
         <div class="filter-pills-row">
             <a class="filter-pill {{ !request('status') ? 'active' : '' }}" href="{{ route('seller.pesanan') }}">Semua ({{ $countSemua ?? 0 }})</a>
             <a class="filter-pill {{ request('status') === 'menunggu konfirmasi' ? 'active' : '' }}" href="{{ route('seller.pesanan', ['status' => 'menunggu konfirmasi']) }}">Menunggu ({{ $countMenunggu ?? 0 }})</a>
-            <a class="filter-pill {{ request('status') === 'diprosses' ? 'active' : '' }}" href="{{ route('seller.pesanan', ['status' => 'diprosses']) }}">Diproses ({{ $countDiproses ?? 0 }})</a>
+            <a class="filter-pill {{ in_array(request('status'), ['diproses', 'diprosses']) ? 'active' : '' }}" href="{{ route('seller.pesanan', ['status' => 'diproses']) }}">Diproses ({{ $countDiproses ?? 0 }})</a>
             <a class="filter-pill {{ request('status') === 'siap diambil' ? 'active' : '' }}" href="{{ route('seller.pesanan', ['status' => 'siap diambil']) }}">Siap Diambil ({{ $countSiap ?? 0 }})</a>
         </div>
     </div>
