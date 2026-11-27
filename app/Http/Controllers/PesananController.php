@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pesanan;
 use App\Models\DetailPesanan;
+use App\Models\Kategori;
 use App\Models\Produk;
 use App\Models\Toko;
 use Illuminate\Http\Request;
@@ -31,16 +32,115 @@ class PesananController extends Controller
     /**
      * Menampilkan daftar menu produk untuk customer.
      */
-    public function menu()
+    public function menu(Request $request)
     {
-        $this->authorizeCustomer();
+        $query = Produk::with(['toko', 'kategori'])
+            ->where('in_stock', true)
+            ->where('stok', '>', 0)
+            ->orderBy('nama_produk');
 
+        if ($search = trim((string) $request->input('q'))) {
+            $query->where(function ($products) use ($search) {
+                $products->where('nama_produk', 'like', "%{$search}%")
+                    ->orWhereHas('toko', fn ($stores) => $stores->where('nama_toko', 'like', "%{$search}%"))
+                    ->orWhereHas('kategori', fn ($categories) => $categories->where('nama_kategori', 'like', "%{$search}%"));
+            });
+        }
+
+        if ($kategoriId = $request->input('kategori')) {
+            $query->where('kategori_id', $kategoriId);
+        }
+
+        $produk = $query->paginate(12)->withQueryString();
+        $kategori = Kategori::orderBy('nama_kategori')->get();
+
+        return view('customer.menu.index', compact('produk', 'kategori'));
+    }
+
+    public function detailToko(string $toko)
+    {
+        $toko = Toko::with(['produk' => fn ($query) => $query
+                ->with('kategori')
+                ->where('in_stock', true)
+                ->where('stok', '>', 0)
+                ->orderBy('nama_produk')])
+            ->findOrFail($toko);
+
+        return view('customer.toko.show', compact('toko'));
+    }
+
+    public function detailMenu(string $produk)
+    {
         $produk = Produk::with(['toko', 'kategori'])
             ->where('in_stock', true)
-            ->orderBy('nama_produk')
-            ->get();
+            ->where('stok', '>', 0)
+            ->findOrFail($produk);
 
-        return view('customer.menu.index', compact('produk'));
+        return view('customer.menu.show', compact('produk'));
+    }
+
+    public function addToCart(Request $request)
+    {
+        $validated = $request->validate([
+            'produk_id' => 'required|integer|exists:produk,id',
+            'jumlah' => 'required|integer|min:1',
+        ]);
+        $produk = Produk::findOrFail($validated['produk_id']);
+
+        if (!$produk->in_stock || $validated['jumlah'] > $produk->stok) {
+            return back()->withErrors(['cart' => 'Jumlah yang dipilih melebihi stok yang tersedia.']);
+        }
+
+        $cart = $request->session()->get('customer_cart', ['toko_id' => null, 'items' => []]);
+        if (!empty($cart['items']) && (int) $cart['toko_id'] !== (int) $produk->toko_id) {
+            return back()->withErrors(['cart' => 'Selesaikan atau kosongkan keranjang dari toko lain terlebih dahulu.']);
+        }
+
+        $existingQuantity = (int) ($cart['items'][$produk->id] ?? 0);
+        if ($existingQuantity + (int) $validated['jumlah'] > $produk->stok) {
+            return back()->withErrors(['cart' => 'Jumlah di keranjang melebihi stok yang tersedia.']);
+        }
+
+        $cart['toko_id'] = $produk->toko_id;
+        $cart['items'][$produk->id] = $existingQuantity + (int) $validated['jumlah'];
+        $request->session()->put('customer_cart', $cart);
+
+        return redirect()->route('customer.pesanan.checkout')->with('success', 'Menu ditambahkan ke keranjang.');
+    }
+
+    public function updateCart(Request $request, Produk $produk)
+    {
+        $validated = $request->validate(['jumlah' => 'required|integer|min:1']);
+        $cart = $request->session()->get('customer_cart', ['toko_id' => null, 'items' => []]);
+
+        if (!array_key_exists($produk->id, $cart['items'] ?? [])) {
+            return back()->withErrors(['cart' => 'Menu tersebut tidak ada di keranjang.']);
+        }
+        if (!$produk->in_stock || $validated['jumlah'] > $produk->stok) {
+            return back()->withErrors(['cart' => 'Jumlah yang dipilih melebihi stok yang tersedia.']);
+        }
+
+        $cart['items'][$produk->id] = (int) $validated['jumlah'];
+        $request->session()->put('customer_cart', $cart);
+
+        return redirect()->route('customer.pesanan.checkout')->with('success', 'Jumlah menu diperbarui.');
+    }
+
+    public function removeFromCart(Request $request, Produk $produk)
+    {
+        $cart = $request->session()->get('customer_cart', ['toko_id' => null, 'items' => []]);
+        if (!array_key_exists($produk->id, $cart['items'] ?? [])) {
+            return back()->withErrors(['cart' => 'Menu tersebut tidak ada di keranjang.']);
+        }
+
+        unset($cart['items'][$produk->id]);
+        if (empty($cart['items'])) {
+            $request->session()->forget('customer_cart');
+        } else {
+            $request->session()->put('customer_cart', $cart);
+        }
+
+        return redirect()->route('customer.pesanan.checkout')->with('success', 'Menu dihapus dari keranjang.');
     }
 
     /**
@@ -48,35 +148,41 @@ class PesananController extends Controller
      */
     public function checkout(Request $request)
     {
-        $this->authorizeCustomer();
-
-        $produkId = $request->query('produk_id');
-        $jumlah   = $request->query('jumlah', 1);
-
         $items = [];
         $totalHarga = 0;
-        $tokoId = null;
+        $cart = $request->session()->get('customer_cart', ['toko_id' => null, 'items' => []]);
+        $produk = Produk::with('toko')->whereIn('id', array_keys($cart['items'] ?? []))->get()->keyBy('id');
+        $cartHasUnavailable = false;
 
-        if ($produkId) {
-            $produk = Produk::with('toko')->find($produkId);
+        foreach ($cart['items'] ?? [] as $produkId => $jumlah) {
+            $itemProduk = $produk->get($produkId);
+            $tersedia = $itemProduk
+                && $itemProduk->in_stock
+                && (int) $jumlah <= (int) $itemProduk->stok
+                && (int) $itemProduk->toko_id === (int) ($cart['toko_id'] ?? 0);
+            $cartHasUnavailable = $cartHasUnavailable || !$tersedia;
+            $hargaSatuan = $itemProduk ? (float) $itemProduk->harga : 0;
+            $subtotal = $hargaSatuan * (int) $jumlah;
+            $totalHarga += $subtotal;
 
-            if ($produk) {
-                $hargaSatuan = (float) $produk->harga;
-                $subtotal    = $hargaSatuan * (int) $jumlah;
-                $totalHarga  = $subtotal;
-                $tokoId      = $produk->toko_id;
-
-                $items[] = [
-                    'produk_id'      => $produk->id,
-                    'nama_produk'    => $produk->nama_produk,
-                    'jumlah'         => (int) $jumlah,
-                    'harga_satuan'   => $hargaSatuan,
-                    'subtotal'       => $subtotal,
-                ];
-            }
+            $items[] = [
+                'produk_id' => (int) $produkId,
+                'nama_produk' => $itemProduk?->nama_produk ?? 'Menu tidak tersedia',
+                'gambar' => $itemProduk?->gambar,
+                'jumlah' => (int) $jumlah,
+                'harga_satuan' => $hargaSatuan,
+                'subtotal' => $subtotal,
+                'tersedia' => $tersedia,
+            ];
         }
 
-        return view('customer.pesanan.checkout', compact('items', 'tokoId', 'totalHarga'));
+        $tokoId = $cart['toko_id'] ?? null;
+        $toko = $tokoId ? Toko::find($tokoId) : null;
+        if (!empty($items) && !$toko) {
+            $cartHasUnavailable = true;
+        }
+
+        return view('customer.pesanan.checkout', compact('items', 'toko', 'tokoId', 'totalHarga', 'cartHasUnavailable'));
     }
 
     /**
@@ -174,6 +280,8 @@ class PesananController extends Controller
                 ]);
             }
         });
+
+        $request->session()->forget('customer_cart');
 
         return redirect()->route('customer.pesanan.index')
             ->with('success', 'Pesanan berhasil dibuat. Kode pesanan: ' . $kodePesanan);

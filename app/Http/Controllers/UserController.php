@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Toko;
+use App\Models\Kategori;
+use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -83,7 +85,30 @@ class UserController extends Controller
 
     public function berandaCustomer()
     {
-        return view('customer.home');
+        $kategori = Kategori::whereHas('produk', fn ($query) => $query->where('in_stock', true)->where('stok', '>', 0))
+            ->withCount(['produk' => fn ($query) => $query->where('in_stock', true)->where('stok', '>', 0)])
+            ->orderBy('nama_kategori')
+            ->get();
+
+        $produk = Produk::with(['toko', 'kategori'])
+            ->where('in_stock', true)
+            ->where('stok', '>', 0)
+            ->orderByDesc('created_at')
+            ->take(8)
+            ->get();
+
+        $toko = Toko::with(['produk' => fn ($query) => $query
+                ->with('kategori')
+                ->where('in_stock', true)
+                ->where('stok', '>', 0)
+                ->orderBy('nama_produk')
+                ->take(3)])
+            ->whereHas('produk', fn ($query) => $query->where('in_stock', true)->where('stok', '>', 0))
+            ->orderBy('nama_toko')
+            ->take(6)
+            ->get();
+
+        return view('customer.home', compact('kategori', 'produk', 'toko'));
     }
 
     public function dashboardToko()
