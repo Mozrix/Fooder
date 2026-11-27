@@ -17,6 +17,7 @@ class PesananController extends Controller
 
         $query = Pesanan::where('toko_id', $toko->id)
             ->whereNotIn('status', ['selesai', 'dibatalkan'])
+            ->whereHas('pembayaran', fn ($q) => $q->where('status', 'paid'))
             ->with(['user', 'detailPesanan.produk', 'antrian', 'pembayaran']);
 
         if ($request->filled('status')) {
@@ -31,7 +32,9 @@ class PesananController extends Controller
         }
 
         $pesanan = $query->latest()->paginate(10)->withQueryString();
-        $base = $toko->pesanan()->whereNotIn('status', ['selesai', 'dibatalkan']);
+        $base = $toko->pesanan()
+            ->whereNotIn('status', ['selesai', 'dibatalkan'])
+            ->whereHas('pembayaran', fn ($q) => $q->where('status', 'paid'));
         $countSemua = (clone $base)->count();
         $countMenunggu = (clone $base)->where('status', 'menunggu konfirmasi')->count();
         $countDiproses = (clone $base)->whereIn('status', ['diproses', 'diprosses'])->count();

@@ -2,26 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pesanan;
+use App\Models\Antrian;
 use App\Models\DetailPesanan;
+use App\Models\HistoriStok;
 use App\Models\Kategori;
+use App\Models\Pembayaran;
+use App\Models\Pesanan;
 use App\Models\Produk;
 use App\Models\Toko;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class PesananController extends Controller
 {
-    /**
-     * Menampilkan daftar riwayat pesanan customer yang login.
-     */
     public function index(Request $request)
     {
         $this->authorizeCustomer();
 
-        $pesanan = Pesanan::with(['detailPesanan.produk.toko'])
+        $pesanan = Pesanan::with(['detailPesanan.produk.toko', 'pembayaran', 'antrian'])
             ->where('user_id', auth()->id())
             ->orderByDesc('created_at')
             ->paginate(10);
@@ -29,9 +28,6 @@ class PesananController extends Controller
         return view('customer.pesanan.index', compact('pesanan'));
     }
 
-    /**
-     * Menampilkan daftar menu produk untuk customer.
-     */
     public function menu(Request $request)
     {
         $query = Produk::with(['toko', 'kategori'])
@@ -143,9 +139,6 @@ class PesananController extends Controller
         return redirect()->route('customer.pesanan.checkout')->with('success', 'Menu dihapus dari keranjang.');
     }
 
-    /**
-     * Menampilkan halaman checkout untuk konfirmasi pesanan.
-     */
     public function checkout(Request $request)
     {
         $items = [];
@@ -186,81 +179,68 @@ class PesananController extends Controller
     }
 
     /**
-     * Membuat pesanan baru untuk customer yang login.
+     * Membuat pesanan baru dengan status pembayaran pending, lalu mengarahkan ke halaman simulasi QRIS.
      */
     public function store(Request $request)
     {
         $this->authorizeCustomer();
 
         $request->validate([
-            'toko_id'      => 'required|integer|exists:toko,id',
-            'tipe_pesanan' => 'sometimes|in:walk-in,online',
-            'items'        => 'required|array|min:1',
+            'toko_id'           => 'required|integer|exists:toko,id',
+            'tipe_pesanan'      => 'sometimes|in:walk-in,online',
+            'items'             => 'required|array|min:1',
             'items.*.produk_id' => 'required|integer|exists:produk,id',
             'items.*.jumlah'    => 'required|integer|min:1',
         ]);
 
-        $user     = auth()->user();
-        $tokoId   = $request->toko_id;
-        $tipe     = $request->input('tipe_pesanan', 'online');
+        $user   = auth()->user();
+        $tokoId = $request->toko_id;
+        $tipe   = $request->input('tipe_pesanan', 'online');
 
         $toko = Toko::find($tokoId);
         if (!$toko) {
             return back()->withErrors(['toko_id' => 'Toko tidak ditemukan.'])->withInput();
         }
 
-        $items     = [];
+        $items      = [];
         $totalHarga = 0;
 
         foreach ($request->items as $item) {
             $produk = Produk::find($item['produk_id']);
 
             if (!$produk) {
-                return back()->withErrors([
-                    'items' => 'Produk tidak ditemukan.'
-                ])->withInput();
+                return back()->withErrors(['items' => 'Produk tidak ditemukan.'])->withInput();
             }
 
-            // Pastikan produk milik toko yang dipilih
             if ((int) $produk->toko_id !== (int) $toko->id) {
-                return back()->withErrors([
-                    'items' => 'Produk "' . $produk->nama_produk . '" tidak milik toko ini.'
-                ])->withInput();
+                return back()->withErrors(['items' => 'Produk "' . $produk->nama_produk . '" tidak milik toko ini.'])->withInput();
             }
 
-            // Pastikan produk tersedia dan stok cukup
             if (!$produk->in_stock) {
-                return back()->withErrors([
-                    'items' => 'Produk "' . $produk->nama_produk . '" saat ini tidak tersedia.'
-                ])->withInput();
+                return back()->withErrors(['items' => 'Produk "' . $produk->nama_produk . '" saat ini tidak tersedia.'])->withInput();
             }
 
             if ((int) $produk->stok < (int) $item['jumlah']) {
-                return back()->withErrors([
-                    'items' => 'Stok "' . $produk->nama_produk . '" tidak cukup (tersedia: ' . $produk->stok . ').'
-                ])->withInput();
+                return back()->withErrors(['items' => 'Stok "' . $produk->nama_produk . '" tidak cukup (tersedia: ' . $produk->stok . ').'])->withInput();
             }
 
-            // Ambil harga dari database, tidak dipercaya dari frontend
             $hargaSatuan = (float) $produk->harga;
             $subtotal    = $hargaSatuan * (int) $item['jumlah'];
-            $totalHarga  += $subtotal;
+            $totalHarga += $subtotal;
 
             $items[] = [
-                'produk_id'   => $produk->id,
-                'jumlah'      => (int) $item['jumlah'],
-                'harga_satuan'=> $hargaSatuan,
-                'total_harga' => $subtotal,
+                'produk_id'    => $produk->id,
+                'jumlah'       => (int) $item['jumlah'],
+                'harga_satuan' => $hargaSatuan,
+                'total_harga'  => $subtotal,
             ];
         }
 
-        // Generate kode pesanan unik
         do {
             $kodePesanan = 'FDR' . date('Ymd') . strtoupper(Str::random(6));
         } while (Pesanan::where('kode_pesanan', $kodePesanan)->exists());
 
-        // Simpan pesanan dan detail dalam satu transaksi
-        DB::transaction(function () use ($user, $toko, $kodePesanan, $tipe, $totalHarga, $items) {
+        $pesanan = DB::transaction(function () use ($user, $toko, $kodePesanan, $tipe, $totalHarga, $items) {
             $pesanan = Pesanan::create([
                 'user_id'      => $user->id,
                 'toko_id'      => $toko->id,
@@ -272,29 +252,163 @@ class PesananController extends Controller
 
             foreach ($items as $item) {
                 DetailPesanan::create([
-                    'pesanan_id'  => $pesanan->id,
-                    'produk_id'   => $item['produk_id'],
-                    'jumlah'      => $item['jumlah'],
-                    'harga_satuan'=> $item['harga_satuan'],
-                    'total_harga' => $item['total_harga'],
+                    'pesanan_id'   => $pesanan->id,
+                    'produk_id'    => $item['produk_id'],
+                    'jumlah'       => $item['jumlah'],
+                    'harga_satuan' => $item['harga_satuan'],
+                    'total_harga'  => $item['total_harga'],
                 ]);
             }
+
+            Pembayaran::create([
+                'pesanan_id'        => $pesanan->id,
+                'metode_pembayaran' => 'qris',
+                'status'            => 'pending',
+            ]);
+
+            return $pesanan;
         });
 
         $request->session()->forget('customer_cart');
 
-        return redirect()->route('customer.pesanan.index')
-            ->with('success', 'Pesanan berhasil dibuat. Kode pesanan: ' . $kodePesanan);
+        return redirect()->route('customer.pesanan.pembayaran', $pesanan->id)
+            ->with('success', 'Pesanan berhasil dibuat. Silakan selesaikan simulasi pembayaran QRIS.');
     }
 
     /**
-     * Menampilkan detail satu pesanan milik customer yang login.
+     * Menampilkan halaman simulasi pembayaran QRIS.
      */
+    public function halamanPembayaran(string $id)
+    {
+        $this->authorizeCustomer();
+
+        $pesanan = Pesanan::with(['detailPesanan.produk', 'toko', 'pembayaran'])
+            ->where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        if (!$pesanan->pembayaran) {
+            Pembayaran::create([
+                'pesanan_id'        => $pesanan->id,
+                'metode_pembayaran' => 'qris',
+                'status'            => 'pending',
+            ]);
+            $pesanan->load('pembayaran');
+        }
+
+        if ($pesanan->pembayaran->status !== 'pending') {
+            return redirect()->route('customer.pesanan.show', $pesanan->id);
+        }
+
+        return view('customer.pesanan.pembayaran', compact('pesanan'));
+    }
+
+    /**
+     * Memproses tombol "Bayar" pada simulasi QRIS (status -> paid).
+     */
+    public function prosesBayar(string $id)
+    {
+        $this->authorizeCustomer();
+
+        $pesanan = Pesanan::with(['detailPesanan.produk', 'pembayaran', 'antrian'])
+            ->where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        if (!$pesanan->pembayaran || $pesanan->pembayaran->status !== 'pending') {
+            return redirect()->route('customer.pesanan.show', $pesanan->id)
+                ->withErrors(['pembayaran' => 'Status pembayaran pesanan ini sudah diproses sebelumnya.']);
+        }
+
+        try {
+            DB::transaction(function () use ($pesanan) {
+                foreach ($pesanan->detailPesanan as $detail) {
+                    $produk = Produk::lockForUpdate()->find($detail->produk_id);
+
+                    if (!$produk || !$produk->in_stock || $produk->stok < $detail->jumlah) {
+                        throw new \RuntimeException('Stok "' . ($produk->nama_produk ?? 'produk') . '" sudah habis atau tidak mencukupi.');
+                    }
+
+                    $stokSebelum = (int) $produk->stok;
+                    $stokSetelah = $stokSebelum - (int) $detail->jumlah;
+
+                    $produk->update([
+                        'stok'     => $stokSetelah,
+                        'in_stock' => $stokSetelah > 0,
+                    ]);
+
+                    HistoriStok::create([
+                        'produk_id'        => $produk->id,
+                        'user_id'          => auth()->id(),
+                        'tipe'             => 'otomatis',
+                        'jumlah_sebelum'   => $stokSebelum,
+                        'jumlah_perubahan' => -$detail->jumlah,
+                        'jumlah_setelah'   => $stokSetelah,
+                        'keterangan'       => 'Pesanan QRIS #' . $pesanan->kode_pesanan,
+                    ]);
+                }
+
+                $pesanan->pembayaran->update([
+                    'metode_pembayaran' => 'qris',
+                    'status'            => 'paid',
+                ]);
+
+                if (!$pesanan->antrian) {
+                    $lastQueue = Antrian::whereHas('pesanan', function ($q) use ($pesanan) {
+                        $q->where('toko_id', $pesanan->toko_id)
+                          ->whereDate('created_at', today());
+                    })->max('nomor_antrian');
+
+                    Antrian::create([
+                        'pesanan_id'    => $pesanan->id,
+                        'nomor_antrian' => ((int) $lastQueue) + 1,
+                    ]);
+                }
+            });
+        } catch (\RuntimeException $e) {
+            return back()->withErrors(['pembayaran' => $e->getMessage()]);
+        }
+
+        return redirect()->route('customer.pesanan.show', $pesanan->id)
+            ->with('success', 'Pembayaran berhasil! Pesanan telah diteruskan ke penjual.');
+    }
+
+    /**
+     * Memproses tombol "Batalkan" pada simulasi QRIS (status -> failed, pesanan -> dibatalkan).
+     */
+    public function batalkanPembayaran(string $id)
+    {
+        $this->authorizeCustomer();
+
+        $pesanan = Pesanan::with('pembayaran')
+            ->where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        if (!$pesanan->pembayaran || $pesanan->pembayaran->status !== 'pending') {
+            return redirect()->route('customer.pesanan.show', $pesanan->id)
+                ->withErrors(['pembayaran' => 'Pembayaran ini tidak dapat dibatalkan lagi.']);
+        }
+
+        DB::transaction(function () use ($pesanan) {
+            $pesanan->pembayaran->update([
+                'status' => 'failed',
+            ]);
+
+            $pesanan->update([
+                'status' => 'dibatalkan',
+            ]);
+        });
+
+        return redirect()->route('customer.pesanan.show', $pesanan->id)
+            ->with('success', 'Pembayaran QRIS dibatalkan. Pesanan otomatis dibatalkan.');
+    }
+
     public function show(string $id)
     {
         $this->authorizeCustomer();
 
-        $pesanan = Pesanan::with(['detailPesanan.produk', 'toko'])
+        $pesanan = Pesanan::with(['detailPesanan.produk', 'toko', 'pembayaran', 'antrian'])
             ->where('id', $id)
             ->where('user_id', auth()->id())
             ->first();
@@ -306,9 +420,6 @@ class PesananController extends Controller
         return view('customer.pesanan.show', compact('pesanan'));
     }
 
-    /**
-     * Memastikan hanya customer yang dapat mengakses fitur ini.
-     */
     private function authorizeCustomer(): void
     {
         if (!auth()->check() || auth()->user()->role !== 'customer') {
