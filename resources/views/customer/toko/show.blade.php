@@ -26,6 +26,7 @@
                 @if ($toko->jam_buka && $toko->jam_tutup)
                     <span><i class="fa-regular fa-clock"></i> {{ $toko->jam_buka }}–{{ $toko->jam_tutup }}</span>
                 @endif
+                <span><i class="fa-solid fa-location-dot"></i> {{ $toko->alamat ?: 'Lokasi belum dicantumkan' }}</span>
             </div>
         </div>
         <a class="market-button" href="#menu-toko">Lihat menu <i class="fa-solid fa-arrow-down"></i></a>

@@ -1,0 +1,310 @@
+.qris-card {
+    max-width: 540px;
+    margin: 0 auto;
+}
+
+.qris-header {
+    text-align: center;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.qris-store-title {
+    margin: 0.75rem 0 0.25rem;
+}
+
+.qris-order-code {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.qris-body {
+    text-align: center;
+    padding: 1.5rem 0;
+}
+
+.qris-label {
+    margin: 0 0 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+.qris-box {
+    display: inline-block;
+    padding: 1rem;
+    background: #ffffff;
+    border: 2px solid #111827;
+    border-radius: 12px;
+}
+
+.qris-total-wrap {
+    margin-top: 1rem;
+}
+
+.qris-total-label {
+    display: block;
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.qris-total-amount {
+    font-size: 1.5rem;
+}
+
+.qris-items-box {
+    background: #f9fafb;
+    padding: 0.85rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.25rem;
+    font-size: 0.9rem;
+}
+
+.qris-items-list {
+    margin: 0.4rem 0 0;
+    padding-left: 1.2rem;
+}
+
+.qris-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.qris-action-form {
+    flex: 1;
+}
+
+.qris-btn-full {
+    width: 100%;
+    justify-content: center;
+}
+
+.qris-btn-cancel {
+    border-color: #dc2626;
+    color: #dc2626;
+}
+
+/* =========================================================
+   HALAMAN STRUK BELANJA & CETAK PDF (struk.blade.php)
+   ========================================================= */
+.receipt-page {
+    box-sizing: border-box;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #f3f4f6;
+    color: #111827;
+    margin: 0;
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.receipt-page *,
+.receipt-page *::before,
+.receipt-page *::after {
+    box-sizing: border-box;
+}
+
+.receipt-action-bar {
+    width: 100%;
+    max-width: 380px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.receipt-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    color: #111827;
+}
+
+.receipt-btn-primary {
+    background: #111827;
+    color: #ffffff;
+    border-color: #111827;
+}
+
+.receipt-btn:hover {
+    opacity: 0.9;
+}
+
+.receipt-paper {
+    width: 100%;
+    max-width: 380px;
+    background: #ffffff;
+    padding: 24px 22px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.receipt-meta-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #374151;
+}
+
+.receipt-meta-row--sub {
+    margin-top: 2px;
+}
+
+.receipt-store-header {
+    text-align: center;
+    margin: 16px 0 14px;
+}
+
+.receipt-store-name {
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin: 0 0 4px;
+    color: #111827;
+}
+
+.receipt-store-detail {
+    font-size: 11px;
+    color: #4b5563;
+    margin: 1px 0;
+}
+
+.receipt-customer-line {
+    font-size: 11.5px;
+    margin: 12px 0 10px;
+    color: #111827;
+}
+
+table.receipt-items {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table.receipt-items th {
+    font-size: 11px;
+    font-weight: 700;
+    text-align: left;
+    padding: 6px 2px;
+    border-bottom: 1.5px solid #9ca3af;
+}
+
+table.receipt-items td {
+    font-size: 11px;
+    padding: 6px 2px;
+    vertical-align: top;
+}
+
+table.receipt-items tbody tr:last-child td {
+    border-bottom: 1.5px solid #9ca3af;
+    padding-bottom: 8px;
+}
+
+.receipt-col-item { width: 44%; }
+.receipt-col-qty { width: 12%; }
+.receipt-col-price { width: 22%; }
+.receipt-col-sub { width: 22%; }
+
+.receipt-text-center { text-align: center !important; }
+.receipt-text-right { text-align: right !important; }
+
+.receipt-summary-section {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-size: 11.5px;
+}
+
+.receipt-summary-left {
+    color: #374151;
+}
+
+.receipt-summary-right table {
+    border-collapse: collapse;
+}
+
+.receipt-summary-right td {
+    padding: 2px 0 2px 14px;
+    text-align: right;
+    font-size: 11.5px;
+}
+
+.receipt-summary-right tr.receipt-total-row td {
+    font-weight: 700;
+    font-size: 13px;
+    padding-top: 5px;
+    color: #111827;
+}
+
+.receipt-paid-amount {
+    margin-top: 12px;
+    font-size: 11.5px;
+    color: #111827;
+}
+
+.receipt-status-box {
+    text-align: center;
+    font-weight: 700;
+    font-size: 12.5px;
+    margin: 16px 0 14px;
+    letter-spacing: 0.4px;
+}
+
+.receipt-thanks-text {
+    text-align: center;
+    font-size: 11.5px;
+    color: #374151;
+    margin: 12px 0 10px;
+}
+
+.receipt-barcode-box {
+    text-align: center;
+    margin-top: 6px;
+}
+
+.receipt-barcode-box svg {
+    width: 210px;
+    height: 44px;
+}
+
+.receipt-barcode-number {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    margin-top: 3px;
+    color: #111827;
+}
+
+@media print {
+    @page {
+        size: 105mm 185mm;
+        margin: 6mm;
+    }
+    .receipt-page {
+        background: #ffffff;
+        padding: 0;
+    }
+    .receipt-action-bar {
+        display: none !important;
+    }
+    .receipt-paper {
+        box-shadow: none;
+        border: none;
+        max-width: 100%;
+        padding: 4px;
+    }
+}
