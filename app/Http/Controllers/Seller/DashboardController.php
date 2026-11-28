@@ -13,7 +13,9 @@ class DashboardController extends Controller
         $user = $request->user();
         $toko = $user?->toko;
 
-        $pesananAktifQuery = $toko ? $toko->pesanan()->whereNotIn('status', ['selesai', 'dibatalkan']) : null;
+        $pesananAktifQuery = $toko ? $toko->pesanan()
+            ->whereNotIn('status', ['selesai', 'dibatalkan'])
+            ->whereHas('pembayaran', fn ($q) => $q->where('status', 'paid')) : null;
         $countActive = $pesananAktifQuery ? (clone $pesananAktifQuery)->count() : 0;
         $countKonfirmasi = $pesananAktifQuery ? (clone $pesananAktifQuery)->where('status', 'menunggu konfirmasi')->count() : 0;
         $countDimasak = $pesananAktifQuery ? (clone $pesananAktifQuery)->whereIn('status', ['diproses', 'diprosses'])->count() : 0;
@@ -52,6 +54,7 @@ class DashboardController extends Controller
         $recentOrders = $toko ? $toko->pesanan()
             ->with(['user', 'detailPesanan.produk', 'antrian'])
             ->whereNotIn('status', ['selesai', 'dibatalkan'])
+            ->whereHas('pembayaran', fn ($q) => $q->where('status', 'paid'))
             ->latest()
             ->take(6)
             ->get() : collect();

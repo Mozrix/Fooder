@@ -39,6 +39,34 @@
                     </td>
                 </tr>
                 <tr>
+                    <th>Status Pembayaran</th>
+                    <td>
+                        @php
+                            $statusBayar = $pesanan->pembayaran->status ?? 'pending';
+                            $badgeBayar = match ($statusBayar) {
+                                'paid' => 'green',
+                                'failed' => 'red',
+                                default => 'amber',
+                            };
+                        @endphp
+                        <span class="cust-badge cust-badge-{{ $badgeBayar }}">
+                            {{ strtoupper($statusBayar) }} ({{ strtoupper($pesanan->pembayaran->metode_pembayaran ?? 'QRIS') }})
+                        </span>
+
+                        @if ($statusBayar === 'pending' && $pesanan->status !== 'dibatalkan')
+                            <a href="{{ route('customer.pesanan.pembayaran', $pesanan->id) }}" class="market-button market-button-small" style="margin-left: 0.5rem;">
+                                Lanjutkan Pembayaran QRIS
+                            </a>
+                        @endif
+                    </td>
+                </tr>
+                @if ($pesanan->antrian)
+                    <tr>
+                        <th>Nomor Antrian</th>
+                        <td><strong>#{{ $pesanan->antrian->nomor_antrian }}</strong> ({{ ucfirst($pesanan->antrian->status) }})</td>
+                    </tr>
+                @endif
+                <tr>
                     <th>Total Harga</th>
                     <td class="cust-price">Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
                 </tr>

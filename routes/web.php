@@ -4,11 +4,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{AdminController, PesananController, UserController,};
 use App\Http\Controllers\Seller\{TokoController, DashboardController, ProdukController, StokController, RiwayatController, PesananController as SellerPesananController};
 
+Route::get('/register', [UserController::class, 'tampilkanFormDaftar'])->name('register');
+Route::post('/register', [UserController::class, 'prosesDaftar']);
 Route::get('/', fn() => redirect()->route('admin.dashboard'));
 Route::get('/login', [UserController::class, 'tampilkanFormMasuk'])->name('login');
 Route::post('/login', [UserController::class, 'prosesMasuk'])->name('login.store');
-Route::get('/register', [UserController::class, 'tampilkanFormDaftar'])->name('register');
-Route::post('/register', [UserController::class, 'prosesDaftar']);
 Route::post('/logout', [UserController::class, 'prosesKeluar'])->name('logout');
 Route::get('/home', [UserController::class, 'berandaCustomer'])->name('customer.home');
 Route::get('/store/dashboard', [UserController::class, 'dashboardToko'])->name('store.dashboard');
@@ -43,6 +43,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/customer/pesanan', [PesananController::class, 'index'])->name('customer.pesanan.index');
     Route::post('/customer/pesanan', [PesananController::class, 'store'])->name('customer.pesanan.store');
     Route::get('/customer/pesanan/{pesanan}', [PesananController::class, 'show'])->name('customer.pesanan.show');
+
+    Route::get('/customer/pesanan/{pesanan}/pembayaran', [PesananController::class, 'halamanPembayaran'])->name('customer.pesanan.pembayaran');
+    Route::post('/customer/pesanan/{pesanan}/bayar', [PesananController::class, 'prosesBayar'])->name('customer.pesanan.bayar');
+    Route::post('/customer/pesanan/{pesanan}/batalkan', [PesananController::class, 'batalkanPembayaran'])->name('customer.pesanan.batalkan');
 });
 
 Route::prefix('seller')->name('seller.')->group(function () {
