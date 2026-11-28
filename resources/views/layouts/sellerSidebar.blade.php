@@ -44,7 +44,8 @@
 
                     $menuItems = [
                         ['label' => 'Dashboard', 'icon' => 'fa-solid fa-shapes', 'route' => 'seller.dashboard', 'pattern' => 'seller.dashboard', 'badge' => null],
-                        ['label' => 'Queue', 'icon' => 'fa-regular fa-clock', 'route' => 'seller.pesanan', 'pattern' => 'seller.pesanan*', 'badge' => $activeCount . ' Aktif'],                    ];
+                        ['label' => 'Queue', 'icon' => 'fa-regular fa-clock', 'route' => 'seller.pesanan', 'pattern' => 'seller.pesanan*', 'badge' => $activeCount . ' Aktif'],
+                    ];
                     @endphp
 
                     @foreach($menuItems as $item)
@@ -98,13 +99,20 @@
                             </a>
                         </div>
                     </div>
-        
-                        <a class="{{ request()->routeIs('seller.toko*') ? 'active' : '' }}" href="{{ route('seller.toko') }}">
-                            <div class="side-nav-content">
+
+                    <a class="{{ request()->routeIs('seller.laporan.*') ? 'active' : '' }}" href="{{ route('seller.laporan.index') }}">
+                        <div class="side-nav-content">
+                            <span class="side-nav-icon"><i class="fa-solid fa-chart-line"></i></span>
+                            <span>Laporan Pendapatan</span>
+                        </div>
+                    </a>
+
+                    <a class="{{ request()->routeIs('seller.toko*') ? 'active' : '' }}" href="{{ route('seller.toko') }}">
+                        <div class="side-nav-content">
                             <span class="side-nav-icon"><i class="fa-solid fa-store"></i></span>
                             <span>Profile Toko</span>
-                            </div>
-                        </a>
+                        </div>
+                    </a>
                 </nav>
             </div>
 

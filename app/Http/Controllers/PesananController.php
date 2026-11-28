@@ -404,6 +404,23 @@ class PesananController extends Controller
             ->with('success', 'Pembayaran QRIS dibatalkan. Pesanan otomatis dibatalkan.');
     }
 
+    public function struk(string $id)
+    {
+        $this->authorizeCustomer();
+
+        $pesanan = Pesanan::with(['detailPesanan.produk', 'toko', 'pembayaran', 'antrian', 'user'])
+            ->where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        if (!$pesanan->pembayaran || $pesanan->pembayaran->status !== 'paid') {
+            return redirect()->route('customer.pesanan.show', $pesanan->id)
+                ->withErrors(['pembayaran' => 'Struk hanya tersedia untuk pesanan dengan pembayaran berstatus PAID.']);
+        }
+
+        return view('customer.pesanan.struk', compact('pesanan'));
+    }
+
     public function show(string $id)
     {
         $this->authorizeCustomer();

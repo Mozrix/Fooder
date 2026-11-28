@@ -40,6 +40,17 @@
                 <div class="form-group-modal">
                     <label class="form-label-modal" for="nama_toko">Nama Toko</label>
                     <input class="form-input-modal" id="nama_toko" name="nama_toko" type="text" value="{{ old('nama_toko', $toko->nama_toko) }}" required maxlength="255">
+                    @error('nama_toko')
+                        <div class="kpi-subtext" style="color:#dc2626">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-group-modal">
+                    <label class="form-label-modal" for="alamat">Lokasi / Alamat Toko</label>
+                    <input class="form-input-modal" id="alamat" name="alamat" type="text" value="{{ old('alamat', $toko->alamat) }}" placeholder="Contoh: Kantin FMIPA, Stan No. 4" maxlength="255">
+                    @error('alamat')
+                        <div class="kpi-subtext" style="color:#dc2626">{{ $message }}</div>
+                    @enderror
                 </div>
             </div>
 

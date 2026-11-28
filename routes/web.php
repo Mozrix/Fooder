@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{AdminController, PesananController, UserController,};
-use App\Http\Controllers\Seller\{TokoController, DashboardController, ProdukController, StokController, RiwayatController, PesananController as SellerPesananController};
+use App\Http\Controllers\Seller\{TokoController, DashboardController, ProdukController, StokController, RiwayatController, LaporanController, PesananController  as SellerPesananController};
 
 Route::get('/register', [UserController::class, 'tampilkanFormDaftar'])->name('register');
 Route::post('/register', [UserController::class, 'prosesDaftar']);
@@ -47,6 +47,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/customer/pesanan/{pesanan}/pembayaran', [PesananController::class, 'halamanPembayaran'])->name('customer.pesanan.pembayaran');
     Route::post('/customer/pesanan/{pesanan}/bayar', [PesananController::class, 'prosesBayar'])->name('customer.pesanan.bayar');
     Route::post('/customer/pesanan/{pesanan}/batalkan', [PesananController::class, 'batalkanPembayaran'])->name('customer.pesanan.batalkan');
+
+    Route::get('/customer/pesanan/{pesanan}/struk', [PesananController::class, 'struk'])->name('customer.pesanan.struk');
 });
 
 Route::prefix('seller')->name('seller.')->group(function () {
@@ -71,4 +73,7 @@ Route::prefix('seller')->name('seller.')->group(function () {
     Route::get('/toko', [TokoController::class, 'index'])->name('toko');
     Route::get('/toko/edit', [TokoController::class, 'edit'])->name('toko.edit');
     Route::put('/toko', [TokoController::class, 'update'])->name('toko.update');
+
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/cetak', [LaporanController::class, 'cetak'])->name('laporan.cetak');
 });

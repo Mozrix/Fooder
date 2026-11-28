@@ -57,6 +57,10 @@
                             <a href="{{ route('customer.pesanan.pembayaran', $pesanan->id) }}" class="market-button market-button-small" style="margin-left: 0.5rem;">
                                 Lanjutkan Pembayaran QRIS
                             </a>
+                        @elseif ($statusBayar === 'paid')
+                            <a href="{{ route('customer.pesanan.struk', $pesanan->id) }}" class="market-button market-button-small" style="margin-left: 0.5rem;">
+                                <i class="fa-solid fa-receipt"></i> Lihat / Simpan Struk (PDF)
+                            </a>
                         @endif
                     </td>
                 </tr>
